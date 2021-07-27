@@ -13,10 +13,12 @@ const lorem = new LoremIpsum({
 });
 
 
-async function li () {
+async function li (done)  {
     tx = await lorem.generateParagraphs(3)
-    return (tx)
+    done(tx)
 }
+
+
 
 
 module.exports = {li}

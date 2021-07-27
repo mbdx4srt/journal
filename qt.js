@@ -1,7 +1,6 @@
 const {li} = require("./loremipsum")
-async function bl() {
-    const tx =  await li()
-   return (tx)
+function bl(tx)  {
+    console.log(tx)
 }
 
-bl().then(x => console.log(x))
+li(bl)

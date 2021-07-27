@@ -1,8 +1,11 @@
 const app = require("../app");
 const request = require("supertest");
-const testUsername = "SamTown"
+
 const testPassword = "Badpassword2"
-const {li} = require("../loremipsum")
+const {li} = require("../loremipsum");
+const {name} = require("../generate_names");
+const testUsername = name()
+console.log(name)
 
 describe("Login", () => {
     var retToken;
@@ -88,21 +91,22 @@ describe("Journal", () => {
 
 
     test("Create journal entry", (done) => {
-        tx = "Culpa in non duis anim elit exercitation. Aliqua nisi sunt nisi tempor nostrud quis. Ex exercitation enim aute aliquip dolor cupidatat elit consequat do voluptate quis reprehenderit. Proident reprehenderit minim aliqua ea. Aliqua commodo excepteur incididunt ex elit exercitation excepteur ipsum nisi sunt ipsum mollit eu ullamco.\n" +
-            "Ut nisi qui ut mollit. Aliquip dolore duis aliquip in ullamco commodo ex cupidatat duis qui eu cupidatat deserunt. Excepteur non Lorem exercitation cillum amet. Dolore dolore adipisicing tempor consectetur tempor mollit quis ex mollit officia in reprehenderit.\n" +
-            "Esse id aute nisi sit. Fugiat nulla veniam ut pariatur laboris officia fugiat esse eiusmod tempor sunt. Labore aliqua sit quis cillum incididunt eiusmod esse fugiat amet dolore. Voluptate in nisi aliqua aute labore deserunt laboris aliquip tempor id. Sunt aute mollit deserunt culpa. Cillum voluptate exercitation qui incididunt cupidatat qui id eiusmod minim. Officia exercitation eiusmod qui commodo ea voluptate veniam velit ullamco non culpa.\n"
-        request(app)
-            .post("/addentry")
-            .set("Authorization", "Bearer " + retToken)
-            .send({'date': Date.now(),
+        function createEntry (tx) {
+            console.log(tx)
+            request(app)
+                .post("/addentry")
+                .set("Authorization", "Bearer " + retToken)
+                .send({'date': Date.now(),
                     'entry': tx})
-            .expect(201)
-            .end(function (err, res) {
-                if (err) {
-                    throw err;
-                }
-                console.log(res.text)
-                done();
-            });
+                .expect(201)
+                .end(function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log(res.text)
+                    done();
+                });
+        }
+        li(createEntry)
     });
 });
