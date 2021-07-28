@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const {User,journalRecord} = require("./db");
 const {generateAccessToken, verifyToken, verifyUser} = require("./auth")
-const {Counter} = require("./counter")
+
 const app = express();
 
 
@@ -18,12 +18,6 @@ const sessionSettings = {
     saveUninitialized: true,
 };
 app.use(session(sessionSettings));
-
-app.use((req, res, next) => {
-    Counter.lookup[req.session.id] =
-        Counter.lookup[req.session.id] || new Counter(req.session.id);
-    next();
-});
 
 
 app.post("/login", verifyUser, async (req, res) => {
@@ -50,10 +44,6 @@ app.get("/greeting", verifyToken, (req, res) => {
 });
 
 
-
-app.get("/counter", verifyToken, (req, res) => {
-    res.send(Counter.lookup[req.session.id].inc());
-});
 
 app.post("/addentry", verifyToken, async (req, res) => {
     const {date, entry} = req.body;
