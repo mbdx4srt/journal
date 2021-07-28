@@ -8,7 +8,7 @@ const app = express();
 
 require("dotenv").config();
 
-console.log(process.env.JWT_SECRET);
+//console.log(process.env.JWT_SECRET);
 app.use(express.json());
 
 const session = require("express-session");
@@ -26,13 +26,13 @@ app.post("/login", verifyUser, async (req, res) => {
     const usernamePassword = String(Buffer.from(base64, "base64"));
     const [username, password] = usernamePassword.split(":");
     result = await generateAccessToken(username)
-    console.log(result)
+    //console.log(result)
     res.send(result)
 });
 
 app.post("/users", async (req, res) => {
     const {username, password} = req.body;
-    console.log(username, password)
+    //console.log(username, password)
     const passwordHash = await bcrypt.hash(password, 10);
     await User.create({username, passwordHash});
     res.sendStatus(201);
@@ -40,12 +40,12 @@ app.post("/users", async (req, res) => {
 
 app.get("/greeting", verifyToken, (req, res) => {
     res.send("Hello " + req.userId)
-    console.log(req.userId)
+    //console.log(req.userId)
 });
 
 
 
-app.post("/addentry", verifyToken, async (req, res) => {
+app.post("/entry", verifyToken, async (req, res) => {
     const {date, entry} = req.body;
     const username = req.userId
     const newRecord = await journalRecord.create({date,entry});
@@ -54,9 +54,26 @@ app.post("/addentry", verifyToken, async (req, res) => {
             username,
         },
     });
-    console.log(userRecord.username)
+    //console.log(userRecord.username)
     await newRecord.update({UserId: userRecord.id})
-    res.sendStatus(201);
+    res.send(201,{id:newRecord.id})
+    //res.sendStatus(201);
+});
+
+
+app.get("/entry", verifyToken, async (req, res) => {
+    const username = req.userId
+    const userRecord = await User.findOne({where: {username},});
+    const entries = await journalRecord.findAll({where: {UserId: userRecord.id}, raw:true});
+    res.send(200, entries);
+});
+
+app.get("/entry/:id", verifyToken, async (req, res) => {
+    const username = req.userId
+    rid = req.params.id
+    const userRecord = await User.findOne({where: {username},});
+    const entries = await journalRecord.findAll({where: {UserId: userRecord.id, id:rid}, raw:true});
+    res.send(200, entries);
 });
 
 
