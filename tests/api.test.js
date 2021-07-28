@@ -113,6 +113,7 @@ describe("Journal", () => {
                         done();
                     });
             }
+
             li(createEntry)
         }
     });
@@ -137,7 +138,7 @@ describe("Journal", () => {
     test("Get last journal entry", (done) => {
         console.log(lastEntryCreated)
         request(app)
-            .get("/entry/"+lastEntryCreated)
+            .get("/entry/" + lastEntryCreated)
             .set("Authorization", "Bearer " + retToken)
             .expect(200)
             .end(function (err, res) {
@@ -148,4 +149,50 @@ describe("Journal", () => {
                 done();
             });
     })
+    test("update last journal entry", (done) => {
+        dte = Date.now()
+        console.log(lastEntryCreated)
+        request(app)
+            .put("/entry/" + lastEntryCreated)
+            .set("Authorization", "Bearer " + retToken)
+            .send({
+                'date': dte,
+                'entry': 'My day was great'
+            })
+            .end(function (err, res) {
+                if (err) {
+                    throw err;
+                }
+                expect(res.body.entry).toBe('My day was great')
+                done();
+            })
+    })
+
+
+    test("delete last journal entry", (done) => {
+        console.log(lastEntryCreated)
+        request(app)
+            .delete("/entry/" + lastEntryCreated)
+            .set("Authorization", "Bearer " + retToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) {
+                    throw err;
+                }
+                done();
+            })
+    })
+    test("delete user", (done) => {
+        request(app)
+            .delete("/users")
+            .set("Authorization", "Bearer " + retToken)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) {
+                    throw err;
+                }
+                done();
+            });
+    })
+
 });

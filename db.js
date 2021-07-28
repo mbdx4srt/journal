@@ -44,8 +44,12 @@ journalRecord.init(
     }
 );
 
-journalRecord.belongsTo(User, {foreignKey: "UserId"})
-User.hasMany(journalRecord)
+journalRecord.belongsTo(User, {foreignKey: "UserId", onDelete: "cascade"})
+User.hasMany(journalRecord, {
+    as: "entries",
+        foreignKey: "UserId",
+        onDelete: "cascade",
+});
 
 
 sequelize.sync();

@@ -72,10 +72,41 @@ app.get("/entry/:id", verifyToken, async (req, res) => {
     const username = req.userId
     rid = req.params.id
     const userRecord = await User.findOne({where: {username},});
-    const entries = await journalRecord.findAll({where: {UserId: userRecord.id, id:rid}, raw:true});
+    const entries = await journalRecord.findOne({where: {UserId: userRecord.id, id:rid}, raw:true});
     res.send(200, entries);
 });
 
+
+app.put("/entry/:id", verifyToken, async (req, res) => {
+    const username = req.userId
+    rid = req.params.id
+    const userRecord = await User.findOne({where: {username},});
+    const entries = await journalRecord.findOne({where: {UserId: userRecord.id, id:rid}});
+    console.log(entries)
+    entries.date =req.body.date;
+    entries.entry=  req.body.entry;
+    await entries.save();
+    res.send(200, entries.toJSON());
+});
+
+
+app.delete("/entry/:id", verifyToken, async (req, res) => {
+    const username = req.userId
+    rid = req.params.id
+    const userRecord = await User.findOne({where: {username},});
+    const entries = await journalRecord.findOne({where: {UserId: userRecord.id, id:rid}});
+    await entries.destroy();
+    res.send(200, entries.toJSON());
+});
+
+
+
+app.delete("/users", verifyToken, async (req, res) => {
+    const username = req.userId
+    const userRecord = await User.findOne({where: {username},});
+    await userRecord.destroy();
+    res.send(200);
+});
 
 
 
